@@ -1,0 +1,6 @@
+---
+temp_dir: /tmp
+dockerfile_name: Dockerfile
+script_name: script.py
+image_name: http-script
+container_name: http-script-container

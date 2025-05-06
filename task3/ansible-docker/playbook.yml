@@ -1,0 +1,12 @@
+---
+- name: Install Docker and dependencies
+  hosts: target_hosts
+  become: yes
+  roles:
+    - install_docker
+
+- name: Run script in Docker container
+  hosts: target_hosts
+  become: no
+  roles:
+    - run_script

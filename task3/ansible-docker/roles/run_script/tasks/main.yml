@@ -1,0 +1,36 @@
+---
+- name: Copy Dockerfile and script to temporary directory
+  copy:
+    src: "{{ item }}"
+    dest: "{{ temp_dir }}/"
+  loop:
+    - "{{ dockerfile_name }}"
+    - "{{ script_name }}"
+
+- name: Build Docker image
+  command: docker build -t {{ image_name }} {{ temp_dir }}/
+  changed_when: true
+
+- name: Run Docker container
+  command: docker run --rm=false --name {{ container_name }} {{ image_name }}
+  register: container_run
+  changed_when: true
+
+- name: Check container exit code
+  assert:
+    that:
+      - container_run.rc == 0
+    fail_msg: "Container execution failed with exit code {{ container_run.rc }}"
+
+- name: Get container logs
+  command: docker logs {{ container_name }}
+  register: container_logs
+  changed_when: false
+
+- name: Display container logs
+  debug:
+    msg: "{{ container_logs.stdout }}"
+
+- name: Remove Docker container
+  command: docker rm {{ container_name }}
+  changed_when: true
